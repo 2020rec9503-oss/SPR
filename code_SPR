@@ -1,0 +1,56 @@
+program SPR
+  implicit none
+  integer, parameter :: dp = kind(1.0d0)
+  integer :: i, npts
+  real(dp) :: pi, lambda, theta, theta_min, theta_max, dtheta
+  real(dp) :: n_prism, n_metal_real, n_metal_imag, n_sample, d_metal
+  complex(dp) :: k0, kx, kz1, kz2, kz3
+  complex(dp) :: eps1, eps2, eps3
+  complex(dp) :: r01, r12, r_tot
+  real(dp) :: R
+
+  pi = 4.0d0 * atan(1.0d0)
+  lambda = 633.0d-9    
+
+ 
+  n_prism = 1.515d0                  ! prism
+  n_metal_real = -11.7d0             ! metal (rea)
+  n_metal_imag = 1.2d0               ! metal (im)
+  n_sample = 1.333d0                 ! medium
+  d_metal = 50.0d-9                  ! thick_metal
+
+  eps1 = cmplx(n_prism**2, 0.0d0, dp)
+  eps2 = cmplx(n_metal_real, n_metal_imag, dp)
+  eps3 = cmplx(n_sample**2, 0.0d0, dp)
+
+  theta_min = 30.0d0 * pi/180.0d0
+  theta_max = 90.0d0 * pi/180.0d0
+  npts = 200
+  dtheta = (theta_max - theta_min)/real(npts-1,dp)
+
+  print *, "# Angle(deg)   Reflectivity"
+
+  do i = 1, npts
+     theta = theta_min + dtheta*real(i-1,dp)
+     k0 = cmplx(2.0d0*pi/lambda, 0.0d0, dp)
+
+     kx  = k0 * n_prism * sin(theta)
+     kz1 = sqrt(eps1*k0**2 - kx**2)
+     kz2 = sqrt(eps2*k0**2 - kx**2)
+     kz3 = sqrt(eps3*k0**2 - kx**2)
+
+     r01 = (eps2*kz1 - eps1*kz2) / (eps2*kz1 + eps1*kz2)
+     r12 = (eps3*kz2 - eps2*kz3) / (eps3*kz2 + eps2*kz3)
+
+     r_tot = (r01 + r12*exp(2.0d0*cmplx(0.0d0,1.0d0,dp)*kz2*d_metal)) / &
+             (1.0d0 + r01*r12*exp(2.0d0*cmplx(0.0d0,1.0d0,dp)*kz2*d_metal))
+
+     R = real(r_tot*conjg(r_tot))
+
+     if (R < 0.0d0) R = 0.0d0
+     if (R > 1.0d0) R = 1.0d0
+
+     print *, theta*180.0d0/pi, R
+  end do
+
+end program SPR
