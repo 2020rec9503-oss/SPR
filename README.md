@@ -1,1 +1,1 @@
-The code refers to the angular interrogtion of an SPR.
+Code repository for the "SPR angular interrogation analysis"
