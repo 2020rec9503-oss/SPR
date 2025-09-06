@@ -1,0 +1,15 @@
+This is the code to simulate and compute the SPR performance matrices. The Transfer matrix mathod (TMM) is utilized to mathematical modelled the SPR structure.
+Method
+Initialize inputs:
+I)        [λ, θ range, n_layer, d_layer]  
+II)       Loop over θ values 
+III)      Convert θ → radians  & Compute k0, kx
+IV)       For each layer j  
+             - Compute kz1, kz2    
+             - Fresnel r, t 
+V)       Compute r_total =  M(2,1)/M(1,1) & Reflectivity R=|r|²
+    
+Visulazation of results
+  Plot Reflectivity vs θ curve .
+
+The model assumes all the layers are smooth and homogenous.
